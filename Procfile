@@ -1,0 +1,1 @@
+web: gunicorn djangoherokuapprp2.wsgi --log-file -
