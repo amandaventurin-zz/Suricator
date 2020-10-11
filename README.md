@@ -1,2 +1,3 @@
 # Suricator
-A new way to learn English
+Suricator não é suricato em inglês, é uma nova maneira de aprender inglês
+
