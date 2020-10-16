@@ -1,14 +1,18 @@
 import sys
 import nltk
+import nltk.tokenize.punkt
+import json
 
-nltk.download('punkt')  #extra nltk resources we'll need to install
 
-txt = sys.argv[0]
+txt = sys.argv[1]
 
 def sentence_count(txt):
     return len(nltk.sent_tokenize(txt))
 
 
 if __name__ == "__main__":
-    for i in range(len(txt)):
-        print("Text " + str(i) + " sentence count: " + str(sentence_count(txt[i])))
+    sentence_count = sentence_count(txt)
+
+    print(json.dumps({
+        "sentences": sentence_count
+    }))

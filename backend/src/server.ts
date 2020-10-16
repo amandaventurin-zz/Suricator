@@ -1,31 +1,31 @@
-import express, { response } from "express";
-import {search} from"./lyric"
+import express from "express";
+import { search } from "./lyric";
+import querystring from "querystring";
+import { pln } from "./pln";
 
 const app = express();
 
-app.get("/", async (request, response) => {
-	// const pythonShell = new PythonShell("main.py", {
-	// 	mode: "text",
-	// 	scriptPath:
-	// 		"/home/hoffman/Documents/code/GitHub/Suricator/backend/src/scripts",
-	// 	args: [song],
-	// });
+app.get("/lyric", async (request, response) => {
+	let lyrics = "";
 
-	// pythonShell.on("message", function (message) {
-    // 	console.log(message);
-    
-    let lyrics = await search("the trooper iron maiden")
+	const url = request.url.replace("/lyric?", "");
+	const parameters = querystring.parse(url);
+	lyrics = await search(parameters.search);
 
-    lyrics = lyrics.replace(/\[Verse\s\d\]\n/g,"")
-    lyrics = lyrics.replace(/\[Verse\s\d\]/g,"")
-    lyrics = lyrics.replace(/\[Refrain\]/g,"")
-    lyrics = lyrics.replace(/\[Guitar solo\]/g,"")
-    lyrics = lyrics.replace(/\n\n\n/g,".")
-    lyrics = lyrics.replace(/\n\n/g,".")
-    lyrics = lyrics.replace(/\n/g, ".")
-
+	lyrics = lyrics.replace(/[(?<=\[)](.*?)[(?=\])]/g, "");
+	lyrics = lyrics.replace(/[(?=\n)][\n]{1,9}[?<=\n]/g, "");
+    lyrics = lyrics.replace(/\n/g, ". ");
+    lyrics = lyrics.replace(/(?<=\s)[(\.)]/g, "");
+    lyrics = lyrics.replace(/^\./g, "");
+    lyrics = lyrics.replace(/(?<=\?)\./g, "");
     lyrics = lyrics.trim()
-	return response.json(lyrics);
+
+    let count: any = await pln(lyrics);
+
+    return response.json({
+        lyrics: lyrics,
+        sentence_count: count.sentences
+    });
 });
 
 app.listen(3333);
